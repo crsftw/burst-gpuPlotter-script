@@ -24,10 +24,11 @@ while :
                 then
                 $PLOTTER generate direct $DRIVE\/$ADDRESS\_$STARTNONCE\_$NONCESNUMBER\_$STAGGERSIZE
                 let STARTNONCE=$STARTNONCE+$NONCESNUMBER+100000
-        else if (($FREESPACE -eq 1073741824)); # 1GB in bytes
+        elif if (($FREESPACE -ge 1073741824)); # 1GB in bytes
                 then
                 $PLOTTER generate direct $DRIVE\/$ADDRESS\_$STARTNONCE\_$NONCESNUMBER2\_$STAGGERSIZE
                 let STARTNONCE=$STARTNONCE+$NONCESNUMBER2+100000
+        else 
+                echo -e 'Done. No more space on HDD.'
         fi
-echo -e 'Done. No more space on HDD.'
 done
