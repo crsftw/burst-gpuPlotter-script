@@ -12,17 +12,22 @@ PLOTTER='/home/user/gpuPlot/gpuPlotGenerator-4.1.3/gpuPlotGenerator'
 ADDRESS=13938318634448660637 #modify this
 STARTNONCE=1
 NONCESNUMBER=4096 # 4GB
+NONCESNUMBER2=1024 # 1GB - let this alone
 STAGGERSIZE=16384 # 4GB used RAM
 
 HDDMAXSIZE=6895278972 # 8TB with ext4 filesystem, use "du -sb" on your system
-FREESPACE=$(du -sb $DRIVE | awk '{ print $1 }')
+FREESPACE=$(df -k $DRIVE | awk '{print $4}')
 
-while true:
+while :
  do
-        if (($FREESPACE > $NONCESNUMBER));
+        if (($FREESPACE -ge 4294967296)); # 4GB in bytes
                 then
                 $PLOTTER generate direct $DRIVE\/$ADDRESS\_$STARTNONCE\_$NONCESNUMBER\_$STAGGERSIZE
                 let STARTNONCE=$STARTNONCE+$NONCESNUMBER+100000
-        else echo -e 'Done. No more space on HDD.'
+        else if (($FREESPACE -eq 1073741824)); # 1GB in bytes
+                then
+                $PLOTTER generate direct $DRIVE\/$ADDRESS\_$STARTNONCE\_$NONCESNUMBER2\_$STAGGERSIZE
+                let STARTNONCE=$STARTNONCE+$NONCESNUMBER2+100000
         fi
+echo -e 'Done. No more space on HDD.'
 done
