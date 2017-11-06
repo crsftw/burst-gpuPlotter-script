@@ -7,28 +7,33 @@
 # DONATE HERE: BURST-CC6X-YEGA-92KJ-EUQV4
 # tildasec [@] gmail.com
 
-DRIVE='/media/burstcoin3/plots'
-PLOTTER='/home/user/gpuPlot/gpuPlotGenerator-4.1.3/gpuPlotGenerator'
-ADDRESS=13938318634448660637 #modify this
-STARTNONCE=1
-NONCESNUMBER=4096 # 4GB
-NONCESNUMBER2=1024 # 1GB - let this alone
-STAGGERSIZE=16384 # 4GB used RAM
+DRIVE='/media/burstcoin/plots'
+PLOTTER='/home/cristi/gpuPlot/gpuPlotGenerator-4.1.3/gpuPlotGenerator'
+ADDRESS=13938318634448660637
+STARTNONCE=600000000
+NONCESNUMBER=409 # 1GB
+STAGGERSIZE=8192
 
-HDDMAXSIZE=6895278972 # 8TB with ext4 filesystem, use "du -sb" on your system
-FREESPACE=$(df -k $DRIVE | awk '{print $4}')
+HDDMAXSIZE=
+FREESPACE=
+
+HDDMAXSIZE=$(df -k $DRIVE | awk '{print $3}' | tail -n1)
+FREESPACE=$(du -s $DRIVE | awk '{ print $1 }')
+
+NONCESIZE=262144
+
 
 while :
  do
-        if (($FREESPACE -ge 4294967296)); # 4GB in bytes
-                then
-                $PLOTTER generate direct $DRIVE\/$ADDRESS\_$STARTNONCE\_$NONCESNUMBER\_$STAGGERSIZE
-                let STARTNONCE=$STARTNONCE+$NONCESNUMBER+100000
-        elif if (($FREESPACE -ge 1073741824)); # 1GB in bytes
-                then
-                $PLOTTER generate direct $DRIVE\/$ADDRESS\_$STARTNONCE\_$NONCESNUMBER2\_$STAGGERSIZE
-                let STARTNONCE=$STARTNONCE+$NONCESNUMBER2+100000
-        else 
-                echo -e 'Done. No more space on HDD.'
-        fi
+  if [ $FREESPACE -gt 2000000 ]
+   then printf "Plotting from $STARTNONCE \n"
+   $PLOTTER generate direct $DRIVE\/$ADDRESS\_$STARTNONCE\_$NONCESNUMBER\_$STAGGERSIZE
+   let STARTNONCE=$STARTNONCE+$NONCESNUMBER+10000
+  else
+   printf 'Done. Or no more available space \n'
+fi
+
+if [ $FREESPACE -eq 0 ]
+ then exit 1
+fi
 done
